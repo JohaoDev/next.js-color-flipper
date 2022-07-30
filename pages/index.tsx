@@ -3,11 +3,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import Navbar from "../components/navbar.component";
+import Seo from "../components/seo.component";
 
 const Home: NextPage = () => {
   const { register, getValues } = useForm();
 
   const [backgroundColor, setBackgroundColor] = useState("#FFF");
+  const [inputType, setInputType] = useState("text");
 
   const applyColorToBackground = () => {
     const colorInput = getValues("colorInput");
@@ -21,35 +23,56 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Navbar />
+      <Seo
+        {...{
+          title: "Color selector",
+          description: "A simple color selector.",
+        }}
+      />
+      <Navbar functions={{ setInputType }} />
 
       <main className="mt-12 fixed w-full">
         <div
           className="w-full h-screen align-middle uppercase flex flex-col justify-center items-center transition-all duration-700"
           style={{ backgroundColor }}
         >
-          <div className="grid grid-cols-3 justify-between px-12 py-6 bg-black max-w-2xl w-full rounded-2xl text-4xl my-3 font-bold text-white">
-            <label htmlFor="colorInput" className="text-center col-span-2">
-              Background color:
-            </label>
+          <div className="px-12 py-6 bg-black w-auto rounded-2xl text-3xl my-3 font-bold text-white">
+            {inputType == "text" && (
+              <div className="flex items-center justify-center">
+                <input
+                  type="text"
+                  id="colorInput"
+                  className="px-3 bg-transparent rounded-lg uppercase w-80 text-center outline-none border"
+                  placeholder="#F15025"
+                  {...register("colorInput", {
+                    required: { message: "Required", value: true },
+                    onChange() {
+                      applyColorToBackground();
+                    },
+                  })}
+                />
+              </div>
+            )}
 
-            <input
-              type="text"
-              id="colorInput"
-              className="px-3 bg-transparent col-span-1 border-gray-500 border rounded-2xl uppercase"
-              placeholder="#F15025"
-              {...register("colorInput", {
-                required: { message: "Required", value: true },
-              })}
-            />
+            {inputType == "color" && (
+              <div className="flex items-center justify-between">
+                <input
+                  type="color"
+                  id="colorInput"
+                  className="px-3 bg-transparent rounded-lg uppercase"
+                  placeholder="#F15025"
+                  {...register("colorInput", {
+                    required: { message: "Required", value: true },
+                    onChange() {
+                      applyColorToBackground();
+                    },
+                  })}
+                />
+
+                <label htmlFor="colorInput">{backgroundColor}</label>
+              </div>
+            )}
           </div>
-
-          <button
-            className="transition-all duration-500 px-8 py-3 border-2 font-bold text-center max-w-2xl rounded-2xl text-xl my-3 uppercase bg-black text-white border-black hover:bg-gray-900 hover:border-gray-900"
-            onClick={() => applyColorToBackground()}
-          >
-            Apply color
-          </button>
         </div>
       </main>
     </>
